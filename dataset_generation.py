@@ -79,11 +79,11 @@ BASE_TEMPLATES = {
 def generate_random_color():
     return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
-def generate_image_matrix(template, is_couleur):
+def generate_image_matrix(template, is_color):
     """Génère la matrice finale (Gris ou Couleur) avec décalage et bruit appliqué."""
     shift_x, shift_y = random.choice([-1, 0, 1]), random.choice([-1, 0, 1])
     
-    if is_couleur:
+    if is_color:
         bg = generate_random_color()
         fg = generate_random_color()
         while sum(abs(f - b) for f, b in zip(fg, bg)) < 150: # Contraste minimum
@@ -95,14 +95,16 @@ def generate_image_matrix(template, is_couleur):
     
     for y in range(16):
         for x in range(16):
+            # Calcul des coordonnées d'origine dans le template après application du décalage
             orig_x, orig_y = x - shift_x, y - shift_y
+            # Vérification des limites pour éviter les index hors de portée
             if 0 <= orig_x < 16 and 0 <= orig_y < 16:
                 val = template[orig_y][orig_x]
                 pixel_val = fg if val == 1 else bg
                 
                 if random.random() < 0.05:
                     noise = random.choice([-30, 30])
-                    if is_couleur:
+                    if is_color:
                         pixel_val = tuple(max(0, min(255, c + noise)) for c in pixel_val)
                     else:
                         pixel_val = max(0, min(255, pixel_val + noise))
@@ -124,7 +126,7 @@ for label, template in BASE_TEMPLATES.items():
         filepath = os.path.join(OUTPUT_DIR, name, filename)
         
         variant_matrix = generate_image_matrix(template, FORMAT_COULEUR)
-        
+        # Sauvegarde de l'image au format PGM ou PPM
         with open(filepath, "w") as f:
             f.write(f"{header}\n16 16\n255\n")
             for row in variant_matrix:
@@ -133,7 +135,7 @@ for label, template in BASE_TEMPLATES.items():
                 else:
                     row_str = " ".join(map(str, row))
                 f.write(row_str + "\n")
-                
+        # Enregistrement du label dans le CSV
         labels_csv.append(f"{name}/{filename},{label}")
         img_counter += 1
 
