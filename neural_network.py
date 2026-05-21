@@ -28,13 +28,13 @@ DATA_DIR = os.path.join("data", IMAGE_FORMAT)
 VECTOR_CSV = os.path.join(DATA_DIR, "vectors.csv")
 METRICS_CSV = os.path.join(DATA_DIR, "training_metrics.csv")
 INPUT_SIZE = 256 if IMAGE_FORMAT == "pgm" else 768
-HIDDEN_SIZE = 8     # h  — nombre de neurones cachés
+HIDDEN_SIZE = 128   # h  — nombre de neurones cachés
 OUTPUT_SIZE = 5     # C  — nombre de classes (émotions)
 ACTIVATION = "relu" # "relu" ou "sigmoid"
 LEARNING_RATE = 0.01
-TRAIN_RATIO = 0.70
-VALIDATION_RATIO = 0.15
-TEST_RATIO = 0.15
+TRAIN_RATIO = 0.60
+VALIDATION_RATIO = 0.20
+TEST_RATIO = 0.20
 TARGET_ERROR = 0.01
 RANDOM_SEED = 42
 
@@ -360,10 +360,10 @@ def save_metrics_csv(history, output_path):
             writer.writerow(flat_row)
 
 
-def train_until_target(train_set, validation_set, W1, b1, W2, b2, target_error=TARGET_ERROR):
+def train_until_target(train_set, validation_set, W1, b1, W2, b2, looking_for_overfitting=False, target_error=TARGET_ERROR):
     history = []
     epoch = 0
-    MAX_EPOCHS = 1000
+    MAX_EPOCHS = 300
     while epoch < MAX_EPOCHS:  
         epoch += 1
         train_loss = train_epoch(train_set, W1, b1, W2, b2)
@@ -416,9 +416,10 @@ def train_until_target(train_set, validation_set, W1, b1, W2, b2, target_error=T
             "\n"
         )
 
-        if validation_error < target_error:
-            print(f"[STOP] Erreur de validation < {target_error:.2f} atteinte à l'epoch {epoch}.")
-            break
+        if not looking_for_overfitting:
+            if validation_error < target_error:
+                print(f"[STOP] Erreur de validation < {target_error:.2f} atteinte à l'epoch {epoch}.")
+                break
 
     return history
 
@@ -438,7 +439,7 @@ def main():
     print(f"[DATA] train={len(train_set)} validation={len(validation_set)} test={len(test_set)}")
 
     W1, b1, W2, b2 = init_network(input_size, HIDDEN_SIZE, OUTPUT_SIZE)
-    history = train_until_target(train_set, validation_set, W1, b1, W2, b2)
+    history = train_until_target(train_set, validation_set, W1, b1, W2, b2, looking_for_overfitting=True)
     save_metrics_csv(history, METRICS_CSV)
     print(f"[CSV] métriques sauvegardées dans {METRICS_CSV}")
 
