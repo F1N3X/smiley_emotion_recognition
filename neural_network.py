@@ -1,21 +1,3 @@
-# Réseau demandé
-# Vous devez coder au minimum un réseau dense avec :
-# — une couche d’entrée de taille d ;
-# — une couche cachée de h neurones ;
-# — une couche de sortie de C neurones, un par classe ;
-# — une activation ReLU ou sigmoïde dans la couche cachée ;
-# — une activation softmax en sortie.
-
-# pour un dataset d'images 16x16 en niveaux de gris, d = 256
-# pour un dataset d'images 16x16 en couleur, d = 768
-# pour une couche de sortie de C neurones, C = 5 (par exemple, pour 5 émotions)
-# h peut être choisi arbitrairement, par exemple h = 64 ou h = 128
-
-# Construire un réseau de neurones from scratch, sans librairie de machine learning
-# Interdiction d'utiliser des librairies externes comme TensorFlow, PyTorch, Keras, NumPy, etc.
-# Seules les librairies standard de Python sont autorisées (math, random, etc.)
-# Le  programme doit prendre une image de smiley en entrée et renvoyer une classe d'émotion
-
 import math
 import csv
 import os
@@ -215,9 +197,9 @@ def evaluate(dataset, W1, b1, W2, b2):
     """Retourne les métriques globales et les métriques par classe sur un ensemble."""
     total_loss = 0.0
     correct = 0
-    true_positives  = [0] * len(W2)  # Nombre de véritables positifs pour chaque classe
-    false_positives = [0] * len(W2)  # Nombre de faux positifs pour chaque classe
-    false_negatives = [0] * len(W2)  # Nombre de faux négatifs pour chaque classe
+    true_positives  = [0] * len(W2)
+    false_positives = [0] * len(W2)
+    false_negatives = [0] * len(W2)
     class_loss_sums = [0.0] * len(W2)
     class_counts    = [0] * len(W2)
 
@@ -344,6 +326,33 @@ def save_metrics_csv(history, output_path):
             writer.writerow(flat_row)
 
 
+def predict_vector(x, W1, b1, W2, b2):
+    """Prédit la classe pour un vecteur d'entrée et retourne (index, nom, probabilités)."""
+    cache = forward_pass(x, W1, b1, W2, b2)
+    y_hat = cache["y_hat"]
+    pred_index = int(max(range(len(y_hat)), key=lambda k: y_hat[k]))
+    pred_name = EMOTION_NAMES.get(pred_index, str(pred_index))
+    return pred_name, y_hat
+
+
+def run_inference_on_samples(dataset, W1, b1, W2, b2, num_samples=10, seed=RANDOM_SEED):
+    """Exécute l'inférence sur un sous-ensemble d'échantillons et affiche les résultats."""
+    if not dataset:
+        print("\n[INFERENCE] Pas d'échantillons disponibles pour l'inférence.")
+        return
+
+    rng = random.Random(seed)
+    samples = rng.sample(dataset, min(num_samples, len(dataset)))
+    print(f"\n[INFERENCE] Exécution de l'inférence sur {len(samples)} échantillons :")
+    for idx, (x, y_true) in enumerate(samples, start=1):
+        pred_name, probs = predict_vector(x, W1, b1, W2, b2)
+        probs_str = ", ".join(f"{EMOTION_NAMES[i]}:{p:.3f}" for i, p in enumerate(probs))
+        print(
+            f" #{idx:02d} vraie={EMOTION_NAMES[y_true]} prédite={pred_name} "
+            f"confiance={max(probs):.3f} probs=[{probs_str}]"
+        )
+
+
 def train_until_target(train_set, validation_set, W1, b1, W2, b2, target_error=TARGET_ERROR):
     history = []
     epoch = 0
@@ -442,6 +451,8 @@ def main():
             f"loss={class_metrics['loss']:.4f} accuracy={class_metrics['accuracy']:.4f} "
             f"precision={class_metrics['precision']:.4f} recall={class_metrics['recall']:.4f} "
         )
+
+    run_inference_on_samples(test_set, W1, b1, W2, b2, num_samples=10)
 
 
 if __name__ == "__main__":

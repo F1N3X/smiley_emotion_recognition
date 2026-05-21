@@ -356,7 +356,7 @@ Solution : tester early stopping, améliorer le dataset en incluant plus d'image
 - surprised :
    - acc=100.00%
    - precision=100.00%
-   - recall=100.00%
+   - recall=100.00% 
    - F1=100.00%
 
 Accuracy globale: 93.00%
