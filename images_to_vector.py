@@ -1,11 +1,6 @@
 import os
 import csv
-
-# CONFIGURATION
-base_dir     = "data"
-format       = "pgm"   # "pgm" ou "ppm"
-OUTPUT_CSV   = os.path.join(base_dir, format, "vectors.csv")
-INPUT_DIR    = os.path.join(base_dir, format)
+from configs import *
 
 
 def read_file(filepath):

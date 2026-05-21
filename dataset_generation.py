@@ -1,20 +1,7 @@
 import os
 import random
 import math
-
-# ==========================================
-# CONFIGURATION
-# ==========================================
-BASE_DIR = "data"
-IMAGES_PER_CLASS = 100
-FORMAT_COULEUR = False  # True = PPM (Couleur P3) | False = PGM (Gris P2)
-# ==========================================
-
-if FORMAT_COULEUR:
-    SUB_DIR = "ppm"
-else:
-    SUB_DIR = "pgm"
-OUTPUT_DIR = os.path.join(BASE_DIR, SUB_DIR)
+from configs import *
 
 EMOTION_NAMES = {0: "happy", 1: "neutral", 2: "sad", 3: "angry", 4: "surprised"}
 
