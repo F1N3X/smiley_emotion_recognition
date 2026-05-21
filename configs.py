@@ -26,7 +26,7 @@ metrics_path = base / "data" / IMAGE_FORMAT / "training_metrics.csv"
 
 BASE_DIR = "data"
 IMAGES_PER_CLASS = 100
-FORMAT_COULEUR = False  # True = PPM (Couleur P3) | False = PGM (Gris P2)
+FORMAT_COULEUR = True if IMAGE_FORMAT == "ppm" else False
 SUB_DIR = IMAGE_FORMAT
 OUTPUT_DIR = os.path.join(BASE_DIR, SUB_DIR)
 
