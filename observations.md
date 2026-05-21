@@ -157,3 +157,166 @@ Macro F1: 91.97%
 - Learning rate = 0.01 (300 epochs) : performance dégradée par rapport au premier cas (accuracy 92%, macro F1 91.97%). Deux hypothèses plausibles :
    - surapprentissage / instabilité due à un training trop long sans early stopping (le modèle exploite le bruit) ;
    - oscillations d'entraînement conduisant à un minimum moins bon sur la validation que celui atteint au bout de 75 epochs.
+
+
+
+# Retour à un learning rate de 0.01 pour les expériences sur la taille du modèle
+## h = 4
+
+### Matrice de confusion :
+| Vraie \ Prédite | happy | neutral | sad | angry | surprised |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| happy | 13 | 1 | 0 | 1 | 0 |
+| neutral | 0 | 13 | 1 | 1 | 0 |
+| sad | 0 | 0 | 15 | 0 | 0 |
+| angry | 0 | 1 | 0 | 14 | 0 |
+| surprised | 0 | 0 | 0 | 0 | 15 |
+
+Performance par classe:
+- happy :
+   - acc=86.67%
+   - precision=92.86%
+   - recall=86.67%
+   - F1=89.66%
+- neutral :
+   - acc=86.67%
+   - precision=86.67%
+   - recall=86.67%
+   - F1=86.67%
+- sad :
+   - acc=100.00%
+   - precision=93.75%
+   - recall=100.00%
+   - F1=96.77%
+- angry :
+   - acc=93.33%
+   - precision=93.33%
+   - recall=93.33%
+   - F1=93.33%
+- surprised :
+   - acc=100.00%
+   - precision=100.00%
+   - recall=100.00%
+   - F1=100.00%
+
+Accuracy globale : 93.33%
+
+Macro F1: 93.29%
+
+### Courbes de loss :
+
+![Courbes de loss pour h = 4](img/loss_curves_comparison_h4.svg)
+
+### Interprétation :
+- Les courbes de loss ne montrent pas de divergence nette entre l'entraînement et la validation, donc il n'y a pas d'indice fort d'overfitting.
+- En revanche, la loss ne descend pas jusqu'à un niveau vraiment satisfaisant, ce qui suggère plutôt un problème de convergence ou un modèle encore trop limité.
+- Les performances restent correctes, mais les erreurs sur `happy` et `neutral` indiquent que la capacité du réseau avec `h = 4` est probablement insuffisante pour séparer complètement toutes les classes.
+- Ce résultat plaide davantage pour un ajustement de l'architecture ou de l'optimisation que pour une stratégie anti-overfitting.
+
+
+## h = 16
+
+### Matrice de confusion :
+| Vraie \ Prédite | happy | neutral | sad | angry | surprised |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| happy | 13 | 1 | 1 | 0 | 0 |
+| neutral | 0 | 15 | 0 | 0 | 0 |
+| sad | 0 | 0 | 15 | 0 | 0 |
+| angry | 0 | 0 | 1 | 14 | 0 |
+| surprised | 0 | 0 | 0 | 0 | 15 |
+
+Performance par classe:
+- happy :
+   - acc=86.67%
+   - precision=100.00%
+   - recall=86.67%
+   - F1=92.86%
+- neutral :
+   - acc=100.00%
+   - precision=93.75%
+   - recall=100.00%
+   - F1=96.77%
+- sad :
+   - acc=100.00%
+   - precision=88.24%
+   - recall=100.00%
+   - F1=93.75%
+- angry :
+   - acc=93.33%
+   - precision=100.00%
+   - recall=93.33%
+   - F1=96.55%
+- surprised :
+   - acc=100.00%
+   - precision=100.00%
+   - recall=100.00%
+   - F1=100.00%
+
+Accuracy globale : 96.00%
+
+Macro F1: 95.99%
+
+### Courbes de loss :
+
+![Courbes de loss pour h = 16](img/loss_curves_comparison_h16.svg)
+
+### Interprétation :
+- On obtient quasiment les mêmes résultats qu’avec `h = 8`, mais plus tôt dans l’entraînement, ce qui suggère que le modèle plus large apprend plus vite.
+- Les performances sont globalement bonnes et restent stables, avec seulement quelques confusions ponctuelles sur `happy`, `sad` et `angry`.
+- En revanche, on voit que sur les derniers epochs la courbe de loss remonte légèrement, ce qui indique que le meilleur point est atteint avant la fin de l’entraînement.
+- En pratique, un early stopping permettrait probablement de conserver le meilleur compromis atteint plus tôt.
+
+# h = 64
+
+### Matrice de confusion :
+| Vraie \ Prédite | happy | neutral | sad | angry | surprised |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| happy | 14 | 0 | 1 | 0 | 0 |
+| neutral | 1 | 14 | 0 | 0 | 0 |
+| sad | 1 | 0 | 14 | 0 | 0 |
+| angry | 1 | 0 | 0 | 14 | 0 |
+| surprised | 0 | 0 | 0 | 0 | 15 |
+
+Performance par classe:
+- happy :
+   - acc=93.33%
+   - precision=87.50%
+   - recall=93.33%
+   - F1=90.32%
+- neutral :
+   - acc=93.33%
+   - precision=93.33%
+   - recall=93.33%
+   - F1=93.33%
+- sad :
+   - acc=93.33%
+   - precision=93.33%
+   - recall=93.33%
+   - F1=93.33%
+- angry :
+   - acc=93.33%
+   - precision=100.00%
+   - recall=93.33%
+   - F1=96.55%
+- surprised :
+   - acc=100.00%
+   - precision=100.00%
+   - recall=100.00%
+   - F1=100.00%
+
+Accuracy globale : 94.67%
+
+Macro F1: 94.71%
+
+### Courbes de loss :
+
+![Courbes de loss pour h = 64](img/loss_curves_comparison_h64.svg)
+
+### Interprétation :
+- Les performances pour `h = 64` sont bonnes (accuracy 94.7%, macro F1 94.7%) et comparables à `h = 8`/`h = 16`, avec des erreurs dispersées entre plusieurs classes.
+- Le modèle semble apprendre rapidement et atteindre des performances stables, mais la courbe de loss (voir image) montre des fluctuations en fin d'entraînement — début d'instabilité ou léger sur-entraînement local.
+- Contrairement à un overfitting marqué, il s'agit plutôt d'une remontée modérée de la loss sur les derniers epochs ; un early stopping permettrait de sauvegarder le meilleur checkpoint.
+
+## Conclusion
+On observe au bout d'un certain temps que la validation loss atteint son taux le plus bas et que dans les modèles les plus complexes, celle si stagne avant de légèrement remonter. Si on laissait l'entrainement tourner plus longtemps, on pourrait faire face à une situation d'overfitting nette.
+Solution : tester early stopping, améliorer le dataset en incluant plus d'images variées, se concentrer sur les modèles moins complexes qui donnaient de meilleurs résultats et plus tôt
