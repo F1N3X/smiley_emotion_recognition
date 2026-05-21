@@ -94,6 +94,7 @@ Quand `IMAGE_FORMAT` change, il faut relancer toute la chaîne, car les fichiers
 - `TRAIN_RATIO`, `VALIDATION_RATIO`, `TEST_RATIO` : répartition du dataset.
 - `TARGET_ERROR` : seuil d'arrêt anticipé utilisé pendant l'entraînement.
 - `RANDOM_SEED` : graine pour rendre les expériences reproductibles.
+- `EARLY_STOPPING` : défini si le modèle s'arrête lorsque la target error est atteinte ou s'il continue jusqu'à sa limite
 
 ### Paramètres du dataset
 

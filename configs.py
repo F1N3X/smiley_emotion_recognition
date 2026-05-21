@@ -15,6 +15,7 @@ VALIDATION_RATIO = 0.15
 TEST_RATIO = 0.15
 TARGET_ERROR = 0.05
 RANDOM_SEED = 42
+EARLY_STOPPING = True
 
 ROOT_DIR = Path(__file__).resolve().parent
 METRICS_PATH = ROOT_DIR / "data" / IMAGE_FORMAT / "training_metrics.csv"

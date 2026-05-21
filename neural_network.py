@@ -344,7 +344,7 @@ def save_metrics_csv(history, output_path):
             writer.writerow(flat_row)
 
 
-def train_until_target(train_set, validation_set, W1, b1, W2, b2, early_stopping=False, target_error=TARGET_ERROR):
+def train_until_target(train_set, validation_set, W1, b1, W2, b2, target_error=TARGET_ERROR):
     history = []
     epoch = 0
     MAX_EPOCHS = 300
@@ -400,7 +400,7 @@ def train_until_target(train_set, validation_set, W1, b1, W2, b2, early_stopping
             "\n"
         )
 
-        if early_stopping:
+        if EARLY_STOPPING:
             if validation_error < target_error:
                 print(f"[STOP] Erreur de validation < {target_error:.2f} atteinte à l'epoch {epoch}.")
                 break
@@ -423,7 +423,7 @@ def main():
     print(f"[DATA] train={len(train_set)} validation={len(validation_set)} test={len(test_set)}")
 
     W1, b1, W2, b2 = init_network(input_size, HIDDEN_SIZE, OUTPUT_SIZE)
-    history = train_until_target(train_set, validation_set, W1, b1, W2, b2, early_stopping=True)
+    history = train_until_target(train_set, validation_set, W1, b1, W2, b2)
     save_metrics_csv(history, METRICS_CSV)
     print(f"[CSV] métriques sauvegardées dans {METRICS_CSV}")
 
