@@ -11,10 +11,10 @@
 - TEST_RATIO       = 0.15
 - TARGET_ERROR     = 0.05
 
-### Nombre d'epochs :
+## Nombre d'epochs :
 75
 
-### Matrice de confusion :
+## Matrice de confusion :
 | Vraie \ Prédite | happy | neutral | sad | angry | surprised |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | happy | 15 | 0 | 0 | 0 | 0 |
@@ -54,7 +54,24 @@ Accuracy globale : 96.00%
 
 Macro F1: 95.99%
 
-### Interprétation :
+## Inferance
+
+### Exécution de l'inférence sur 10 échantillons :
+
+| # | Vraie | Prédite | Confiance | Probabilités (happy, neutral, sad, angry, surprised) |
+|---:|:------:|:-------:|---------:|:---------------------------------------------------|
+| 01 | neutral | neutral | 0.734 | happy:0.266, neutral:0.734, sad:0.000, angry:0.000, surprised:0.000 |
+| 02 | happy   | happy   | 0.972 | happy:0.972, neutral:0.028, sad:0.000, angry:0.000, surprised:0.000 |
+| 03 | sad     | sad     | 0.962 | happy:0.001, neutral:0.032, sad:0.962, angry:0.005, surprised:0.000 |
+| 04 | sad     | sad     | 0.980 | happy:0.020, neutral:0.000, sad:0.980, angry:0.000, surprised:0.000 |
+| 05 | sad     | sad     | 0.908 | happy:0.043, neutral:0.048, sad:0.908, angry:0.000, surprised:0.000 |
+| 06 | angry   | angry   | 1.000 | happy:0.000, neutral:0.000, sad:0.000, angry:1.000, surprised:0.000 |
+| 07 | angry   | angry   | 1.000 | happy:0.000, neutral:0.000, sad:0.000, angry:1.000, surprised:0.000 |
+| 08 | surprised| surprised| 0.998 | happy:0.000, neutral:0.002, sad:0.000, angry:0.000, surprised:0.998 |
+| 09 | surprised| surprised| 0.995 | happy:0.000, neutral:0.005, sad:0.000, angry:0.000, surprised:0.995 |
+| 10 | happy   | happy   | 0.986 | happy:0.986, neutral:0.013, sad:0.000, angry:0.000, surprised:0.000 |
+
+## Interprétation :
 - Le modèle est globalement très performant, avec une accuracy élevée et un macro F1 proche de l'accuracy, ce qui indique un comportement assez équilibré entre les classes.
 - La classe `surprised` est la mieux reconnue ici, sans erreur sur l'échantillon de validation affiché.
 - Les principales confusions concernent `neutral` et, dans une moindre mesure, `angry`, ce qui suggère que ces expressions partagent des caractéristiques visuelles proches dans le jeu de données.
