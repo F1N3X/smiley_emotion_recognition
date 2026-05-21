@@ -320,3 +320,55 @@ Macro F1: 94.71%
 ## Conclusion
 On observe au bout d'un certain temps que la validation loss atteint son taux le plus bas et que dans les modèles les plus complexes, celle si stagne avant de légèrement remonter. Si on laissait l'entrainement tourner plus longtemps, on pourrait faire face à une situation d'overfitting nette.
 Solution : tester early stopping, améliorer le dataset en incluant plus d'images variées, se concentrer sur les modèles moins complexes qui donnaient de meilleurs résultats et plus tôt
+
+
+# Passage aux images couleur (PPM)
+## Entrainement avec les meme paramètres initiaux
+| Vraie \ Prédite | happy | neutral | sad | angry | surprised |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| happy | 13 | 1 | 1 | 0 | 0 |
+| neutral | 1 | 14 | 0 | 0 | 0 |
+| sad | 0 | 1 | 14 | 0 | 0 |
+| angry | 0 | 1 | 0 | 14 | 0 |
+| surprised | 0 | 0 | 0 | 0 | 15 |
+
+  Performance par classe:
+- happy :
+   - acc=86.67%
+   - precision=89.47%
+   - recall=85.00%
+   - F1=87.18%
+- neutral :
+   - acc=93.33%
+   - precision=82.61%
+   - recall=95.00%
+   - F1=88.37%
+- sad :
+   - acc=93.33%
+   - precision=95.00%
+   - recall=95.00%
+   - F1=95.00%
+- angry :
+   - acc=93.33%
+   - precision=100.00%
+   - recall=90.00%
+   - F1=94.74%
+- surprised :
+   - acc=100.00%
+   - precision=100.00%
+   - recall=100.00%
+   - F1=100.00%
+
+Accuracy globale: 93.00%
+
+Macro F1: 93.06%
+
+## Analyse comparative : PPM vs PGM
+
+- **Bilan chiffré rapide :** PGM: `Accuracy=96.00%`, `Macro F1=95.99%`. PPM: `Accuracy=93.00%`, `Macro F1=93.06%`. Passage couleur → baisse d'environ 2.9–3.0 points absolus.
+
+- **Comportement par classe :**
+   - `happy` : forte baisse du recall (100% → 85%) et baisse du F1 (93.75 → 87.18). Le modèle confond davantage `happy` en couleur.
+   - `neutral` : recall augmente (86.67% → 95%) mais precision chute (100% → 82.61%) — plus de faux positifs classés `neutral` en PPM.
+   - `sad` / `surprised` : performances stables et élevées sur les deux représentations.
+   - `angry` : globalement stable, légère variation du recall (≈93% → 90%).
