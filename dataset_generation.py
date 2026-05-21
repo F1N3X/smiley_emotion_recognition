@@ -194,61 +194,31 @@ def generate_random_color():
     return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
 def generate_image_matrix(template, is_color):
-    """
-    Pipeline d'augmentation complet :
-      1. Rotation aléatoire légère
-      2. Mise à l'échelle aléatoire
-      3. Translation (décalage)
-      4. Épaississement optionnel des traits
-      5. Dropout de pixels
-      6. Conversion en niveaux de gris ou couleur avec intensité variable
-      7. Bruit salt & pepper
-      8. Flou local optionnel
-    """
-    # --- Étape 1 : Transformations géométriques ---
-    # Sur 16×16, ±5° est déjà significatif (≈1px de décalage en bord de grille)
-    angle    = random.uniform(-5, 5)            # Rotation ±5°
-    # Zoom très limité : à 0.9, un trait de 2px reste à 2px ; en dessous il risque de disparaître
-    scale    = random.uniform(0.90, 1.10)       # Zoom ±10%
-    shift_x  = random.randint(-1, 1)            # Translation ±1 px
-    shift_y  = random.randint(-1, 1)
+    shift_x = random.randint(-1, 1)             # +1 px : seule transformation géométrique sûre
+    shift_y = random.randint(-1, 1)
+    t = apply_shift(template, shift_x, shift_y)
 
-    t = apply_rotation(template, angle)
-    t = apply_scale(t, scale)
-    t = apply_shift(t, shift_x, shift_y)
-
-    # --- Étape 2 : Variation structurelle des traits ---
-    # Érosion retirée : sur des traits de 1–2px elle efface complètement les features
-    morph = random.random()
-    if morph < 0.30:                            # 30% épaississement (conservateur)
-        t = apply_thickness(t)
-    # Dropout très faible : sur 2px de largeur, chaque pixel compte
-    dropout_rate = random.uniform(0.0, 0.08)    # 0–8% maximum
-    t = apply_dropout(t, dropout_rate)
-
-    # --- Étape 3 : Couleurs / intensités ---
     if is_color:
         bg = generate_random_color()
         fg = generate_random_color()
         while sum(abs(f - b) for f, b in zip(fg, bg)) < 150:
             fg = generate_random_color()
     else:
-        # Fond légèrement variable, encre légèrement variable — contraste toujours lisible
-        bg = random.randint(220, 255)
-        fg = random.randint(0, 30)
+        bg = random.randint(220, 255)           # Fond : blanc légèrement variable
+        fg = random.randint(0, 30)              # Encre : noir légèrement variable
 
-    # --- Étape 4 : Construction de la matrice ---
+    # --- Étape 3 : Construction de la matrice ---
     matrix = [[bg]*16 for _ in range(16)]
-    noise_rate = random.uniform(0.01, 0.05)     # Salt & pepper 1–5% (au-delà ça pollue trop)
-    gaussian_std = random.uniform(0, 8)         # Gaussien doux : std max 8 sur une plage 0–255
+    noise_rate = random.uniform(0.01, 0.03)     # 1–3% : quelques pixels parasites
+    gaussian_std = random.uniform(0, 6)         # Gaussien très doux
 
     for y in range(16):
         for x in range(16):
             pixel_val = fg if t[y][x] == 1 else bg
 
-            # Bruit gaussien simulé (somme de petites perturbations aléatoires ≈ loi normale)
+            # Bruit gaussien simulé
             if gaussian_std > 0:
-                gauss = sum(random.uniform(-1, 1) for _ in range(6)) / 6  # ≈ N(0,1) par TCL
+                gauss = sum(random.uniform(-1, 1) for _ in range(6)) / 6
                 gauss_noise = int(gauss * gaussian_std)
                 if is_color:
                     pixel_val = tuple(max(0, min(255, c + gauss_noise)) for c in pixel_val)
@@ -262,7 +232,6 @@ def generate_image_matrix(template, is_color):
 
             matrix[y][x] = pixel_val
 
-    # --- Étape 5 : Flou local optionnel ---
     if random.random() < 0.3:
         matrix = apply_blur(matrix, is_color, bg, fg)
 
